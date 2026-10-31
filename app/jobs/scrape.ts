@@ -38,13 +38,11 @@ async function runOne(app: string, scrape: () => Promise<Scraped[]>) {
     const rows = (await scrape()).filter((r) => r.brandId && r.name);
     const now = new Date();
 
-    // 1. Make sure every brand this app returned exists in app_brands
     await db
       .insert(appBrands)
       .values(rows.map((r) => ({ app, appBrandId: r.brandId!, name: r.name! })))
       .onDuplicateKeyUpdate({ set: { name: sql`values(${appBrands.name})` } });
 
-    // 2. Auto-link Tillo-slug apps to a shared brand
     if (TILLO_SLUG_APPS.includes(app)) {
       await db
         .insert(brands)
@@ -59,14 +57,12 @@ async function runOne(app: string, scrape: () => Promise<Scraped[]>) {
       `);
     }
 
-    // 3. Map this app's brand IDs to app_brands row IDs
     const existing = await db
       .select({ id: appBrands.id, appBrandId: appBrands.appBrandId })
       .from(appBrands)
       .where(eq(appBrands.app, app));
     const idMap = new Map(existing.map((e) => [e.appBrandId, e.id]));
 
-    // 4. Save this run's rates (in chunks to keep queries small)
     const rateRows = rows.map((r) => ({
       runId,
       appBrandId: idMap.get(r.brandId!)!,
@@ -98,6 +94,6 @@ async function runOne(app: string, scrape: () => Promise<Scraped[]>) {
 
 export async function runAllScrapers() {
   for (const [app, scrape] of Object.entries(SCRAPERS)) {
-    await runOne(app, scrape); // one failing app doesn't stop the others
+    await runOne(app, scrape);
   }
 }

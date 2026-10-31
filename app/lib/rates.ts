@@ -77,7 +77,6 @@ export async function getLatestRates(): Promise<RatesData> {
     lastFetchedAtMs = Math.max(lastFetchedAtMs, record.fetchedAt.getTime());
 
     const retailerName = record.canonicalBrandName ?? record.appBrandName;
-    // Match retailers across apps by name; JamDoughnut isn't linked to `brands` yet.
     const retailerKey = normalizeName(retailerName);
 
     const offer: AppOffer = {

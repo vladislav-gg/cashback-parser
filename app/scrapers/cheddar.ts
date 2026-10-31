@@ -1,4 +1,3 @@
-// --- minimal protobuf reader (no schema needed) ---
 type Fields = Map<number, any[]>;
 
 function readVarint(buf: Uint8Array, pos: number): [number, number] {
@@ -38,7 +37,6 @@ const td = new TextDecoder();
 const str = (b?: Uint8Array) => (b ? td.decode(b) : undefined);
 const first = (m: Fields, f: number) => m.get(f)?.[0];
 
-// --- scraper ---
 export async function fetchCheddarBrands() {
   const res = await fetch(
     "https://mobileapi.chddr.net/twirp/cheddar.mobile_api.Cheddar/ListOffersV2",
@@ -63,7 +61,6 @@ export async function fetchCheddarBrands() {
 
   const top = decode(new Uint8Array(await res.arrayBuffer()));
 
-  // Categories (field 2): find the "boosted" one and its offer IDs (field 8)
   const boostedIds = new Set<string>();
   for (const catBytes of top.get(2) ?? []) {
     const cat = decode(catBytes);
@@ -72,11 +69,10 @@ export async function fetchCheddarBrands() {
     }
   }
 
-  // Offers (field 3), gift card offers are wrapped in sub-field 2
   const results = [];
   for (const wrapperBytes of top.get(3) ?? []) {
     const offerBytes = first(decode(wrapperBytes), 2);
-    if (!offerBytes) continue; // not a gift card offer
+    if (!offerBytes) continue;
     const o = decode(offerBytes);
 
     const id = str(first(o, 1))!;
@@ -88,11 +84,11 @@ export async function fetchCheddarBrands() {
       .filter(Boolean)
       .map((m: Uint8Array) => parseFloat(str(first(decode(m), 1)) ?? "0"));
 
-    const methods = Array.from((first(o, 10) as Uint8Array) ?? []); // 1 = in-store, 2 = online
+    const methods = Array.from((first(o, 10) as Uint8Array) ?? []);
 
     results.push({
       app: "cheddar",
-      brandId: str(first(o, 18)) ?? str(first(o, 16)), // Tillo slug, matches EverUp ids
+      brandId: str(first(o, 18)) ?? str(first(o, 16)),
       name: str(first(o, 21)) ?? str(first(o, 2)),
       cashbackPct,
       bestTierPct: tierRates.length ? Math.max(...tierRates) : null,

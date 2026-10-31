@@ -26,7 +26,7 @@ export async function fetchJamDoughnutBrands() {
 
     const data = await res.json();
     total = data.all_items_count ?? 0;
-    if (!data.all_items?.length) break; // no more pages
+    if (!data.all_items?.length) break;
     items.push(...data.all_items);
   }
 
@@ -35,7 +35,7 @@ export async function fetchJamDoughnutBrands() {
     brandId: b.slug,
     tilloId: b.gift_card_id,
     name: b.name,
-    cashbackPct: b.highest_discount,      // already a percentage
+    cashbackPct: b.highest_discount,
     cardCashbackPct: b.pumped_up?.card_discount ?? null,
     boosted: !!b.pumped_up,
     boostEndsAt: b.pumped_up?.ends_at ? new Date(b.pumped_up.ends_at * 1000) : null,

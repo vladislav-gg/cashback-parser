@@ -12,11 +12,11 @@ async function getEverupTokens() {
       ClientId: process.env.EVERUP_CLIENT_ID!,
       AuthParameters: {
         REFRESH_TOKEN: process.env.EVERUP_REFRESH_TOKEN!,
-        DEVICE_KEY: process.env.EVERUP_DEVICE_KEY!, // needed if device tracking is on
+        DEVICE_KEY: process.env.EVERUP_DEVICE_KEY!,
       },
     })
   );
-  return res.AuthenticationResult!; // { IdToken, AccessToken, ExpiresIn }
+  return res.AuthenticationResult!;
 }
 
 export async function fetchEverupBrands() {
@@ -24,7 +24,7 @@ export async function fetchEverupBrands() {
 
   const res = await fetch("https://api.everup.uk/v1/gift-card/brands", {
     headers: {
-      token: AccessToken!, // if this gives 401, try AccessToken instead
+      token: AccessToken!,
       "eup-app-version": "1.7.5",
       "eup-app-build-number": "3301",
       "eup-app-platform": "2",
@@ -35,7 +35,7 @@ export async function fetchEverupBrands() {
   });
   if (!res.ok) throw new Error(`EverUp brands failed: ${res.status}`);
 
-  const brands = await res.json(); // may be an array, or wrapped in { items: [...] }
+  const brands = await res.json();
   const list = Array.isArray(brands) ? brands : brands.items;
 
   return list
