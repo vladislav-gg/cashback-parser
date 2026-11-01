@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import { getLatestRates } from "./lib/rates";
 import { RatesTable } from "./components/rates-table";
 
+export const dynamic = "force-dynamic";
+
 async function LatestRates() {
   const { retailers, apps, lastFetchedAt } = await getLatestRates();
 

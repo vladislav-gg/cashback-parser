@@ -43,7 +43,7 @@ export type EverupOffer = {
 };
 
 export async function fetchEverupBrands(): Promise<EverupOffer[]> {
-  const { IdToken, AccessToken } = await getEverupTokens();
+  const { AccessToken } = await getEverupTokens();
 
   const res = await fetch("https://api.everup.uk/v1/gift-card/brands", {
     headers: {
