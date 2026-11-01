@@ -1,4 +1,3 @@
-import { cacheLife } from "next/cache";
 import { eq, inArray, sql } from "drizzle-orm";
 import { db } from "../db";
 import { appBrands, brands, rates, scrapeRuns } from "../db/schema";
@@ -42,8 +41,6 @@ async function getLatestSuccessfulRunIds(): Promise<number[]> {
 }
 
 export async function getLatestRates(): Promise<RatesData> {
-  "use cache";
-  cacheLife("minutes");
 
   const runIds = await getLatestSuccessfulRunIds();
   if (runIds.length === 0) {

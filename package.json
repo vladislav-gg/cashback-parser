@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "worker": "tsx --env-file=.env app/scripts/worker.ts"
+    "scrape": "tsx --env-file=.env app/scripts/run-scrape.ts"
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.1156.0",
@@ -15,7 +15,6 @@
     "drizzle-orm": "^0.45.4",
     "mysql2": "^3.24.6",
     "next": "16.4.3",
-    "node-cron": "^4.6.0",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },
