@@ -20,7 +20,7 @@ type Scraped = {
 const SCRAPERS: Record<string, () => Promise<Scraped[]>> = {
   everup: fetchEverupBrands,
   jamdoughnut: fetchJamDoughnutBrands,
-  cheddar: fetchCheddarBrands,
+  // cheddar: fetchCheddarBrands,
 };
 
 const TILLO_SLUG_APPS = ["everup", "cheddar"];

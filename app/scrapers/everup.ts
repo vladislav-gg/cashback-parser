@@ -19,7 +19,30 @@ async function getEverupTokens() {
   return res.AuthenticationResult!;
 }
 
-export async function fetchEverupBrands() {
+type EverupApiBrand = {
+  id: string;
+  name: string;
+  unavailable?: boolean;
+  total_rewards_perc: number;
+  valid_boost_factor?: number;
+  boost_expiration?: string | null;
+  detail?: {
+    redemption_methods?: string[];
+  };
+};
+
+export type EverupOffer = {
+  app: "everup";
+  brandId: string;
+  name: string;
+  cashbackPct: number;
+  boosted: boolean;
+  boostEndsAt: Date | null;
+  online: boolean;
+  instore: boolean;
+};
+
+export async function fetchEverupBrands(): Promise<EverupOffer[]> {
   const { IdToken, AccessToken } = await getEverupTokens();
 
   const res = await fetch("https://api.everup.uk/v1/gift-card/brands", {
@@ -35,17 +58,17 @@ export async function fetchEverupBrands() {
   });
   if (!res.ok) throw new Error(`EverUp brands failed: ${res.status}`);
 
-  const brands = await res.json();
+  const brands = (await res.json()) as EverupApiBrand[] | { items: EverupApiBrand[] };
   const list = Array.isArray(brands) ? brands : brands.items;
 
   return list
-    .filter((b: any) => !b.unavailable)
-    .map((b: any) => ({
+    .filter((b) => !b.unavailable)
+    .map((b) => ({
       app: "everup",
       brandId: b.id,
       name: b.name,
       cashbackPct: Math.round(b.total_rewards_perc * 10000) / 100,
-      boosted: b.valid_boost_factor > 0,
+      boosted: (b.valid_boost_factor ?? 0) > 0,
       boostEndsAt: b.boost_expiration ? new Date(b.boost_expiration) : null,
       online: b.detail?.redemption_methods?.includes("Online") ?? false,
       instore: b.detail?.redemption_methods?.includes("Instore") ?? false,
