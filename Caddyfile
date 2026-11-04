@@ -1,3 +1,0 @@
-cashback-parser.vladislavgoian.com {
-	reverse_proxy web:3000
-}
