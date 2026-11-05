@@ -42,6 +42,8 @@ services:
     command: tunnel run
     environment:
       TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
+    dns_search:
+      - .
     depends_on:
       - web
 
